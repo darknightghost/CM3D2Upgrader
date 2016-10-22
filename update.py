@@ -123,7 +123,9 @@ class GameFile:
 def main(argv):
     if len(argv) < 2:
         usage(argv[0])
-        return 0
+        sys.exit(0)
+        
+    os.chdir(os.path.split(os.path.abspath(argv[0]))[0])
 
     #Load file list
     print("Loading game files...\n")
@@ -138,7 +140,7 @@ def main(argv):
                 != patch_file_dict[k].size:
             print("Size of file \"%s\" is incorrect!", 
                     os.path.join(patch_path, k))
-            return -1
+            raise Exception()
 
     #Join list and copy file
     file_list = []
@@ -190,7 +192,7 @@ def load_game_file_dict():
 
     if game_list_file == "":
         print("\"update.lst\" not found.")
-        exit(-1)
+        raise FileNotFoundError()
 
     f = open(game_list_file, "r")
     l = f.readlines()
@@ -221,5 +223,12 @@ def load_patch_file_dict(path):
 
     return data_path, file_dict
 
-ret = main(sys.argv)
-exit(ret)
+try:
+    ret = main(sys.argv)
+    print("Succeed!")
+except Exception:
+    print("Failed!")
+    ret = -1
+print("Press <Enter> to exit...")
+input()
+sys.exit(ret)
